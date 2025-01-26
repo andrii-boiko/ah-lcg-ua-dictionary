@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Ah-lcg</title>
+    <style>
+        th, td {
+            padding: 8px;
+            border: 1px solid black;
+            text-align: left;
+        }
+
+        #filter {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            display: flex; /* Використовуємо flexbox для центрування */
+            justify-content: center; /* Центруємо по горизонталі */
+            align-items: flex-start; /* Вирівнюємо по вертикалі зверху */
+            min-height: 100vh; /* Забезпечуємо, що body займає всю висоту екрану */
+            margin: 0; /* Забираємо стандартні відступи body */
+        }
+
+        .search-container {
+            position: fixed;
+            top: 0;
+            left: 5%; /* Зміщуємо на 5% зліва */
+            width: 90%; /* Задаємо ширину 90% */
+            background-color: #fff;
+            z-index: 100;
+        }
+
+        table {
+            width: 90%; /* Задаємо ширину 90% */
+            border-collapse: collapse;
+            margin-top: 60px; /* Відступ зверху, враховуючи висоту search-container */
+        }
+    </style>
+    <script src="data.js"></script>
+</head>
+<body>
+<div class="search-container">
+    <input type="text" id="filter" placeholder="Пошук..." >
+</div>
+
+
+<table id="myTable">
+    <thead>
+    <tr>
+        <th>Англійський термін</th>
+        <th>Оновлене видання</th>
+        <th>Попередні видання</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script type="module">
+    import data from './data.js';
+    function displayData(items) {
+        const table = document.getElementById("myTable").getElementsByTagName("tbody")[0];
+        table.innerHTML = ""; // Очистити таблицю перед відображенням нових даних
+
+        items.forEach(item => {
+            const row = table.insertRow();
+            const englishCell = row.insertCell();
+            const revisedCell = row.insertCell();
+            const previousCell = row.insertCell();
+
+            if (item.revisedCoreSet !== item.previousEditions) {
+                previousCell.style.backgroundColor = 'lightgray';
+            }
+
+            englishCell.textContent = item.englishTerm;
+            revisedCell.textContent = item.revisedCoreSet;
+            previousCell.textContent = item.previousEditions;
+        });
+    }
+
+    function filterData() {
+        const filterText = document.getElementById("filter").value.toLowerCase();
+
+        const filteredData = data.filter(item => {
+            const englishMatch = item.englishTerm.toLowerCase().includes(filterText);
+            const revisedMatch = item.revisedCoreSet.toLowerCase().includes(filterText);
+            const previousMatch = item.previousEditions.toLowerCase().includes(filterText);
+            return englishMatch || revisedMatch || previousMatch;
+        });
+
+        displayData(filteredData);
+    }
+
+    document.getElementById("filter").addEventListener("keyup", filterData);
+    displayData(data); // Вивести всі дані при завантаженні сторінки
+</script>
+
+</body>
+</html>
